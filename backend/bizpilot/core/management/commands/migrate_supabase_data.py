@@ -213,7 +213,7 @@ class Command(BaseCommand):
         db_url = options.get("database_url") or os.environ.get("SUPABASE_DATABASE_URL")
         dry_run = options.get("dry_run", False)
         reset = options.get("reset", False)
-
+        if not file_path and not db_url:
             # Default to repo seed.sql path
             workspace_root = settings.BASE_DIR.parent
             default_seed = workspace_root / "frontend" / "supabase" / "seed.sql"
