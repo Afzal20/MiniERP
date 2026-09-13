@@ -234,8 +234,11 @@ class Command(BaseCommand):
             self.stdout.write(f"Connecting to live database at {db_url.split('@')[-1]}...")
             tables_data = self._extract_from_database(db_url)
         else:
-            self.stdout.write(f"Parsing SQL file from {file_path}...")
-            tables_data = self._extract_from_file(file_path)
+            if not file_path:
+                raise CommandError("No SQL file path specified or found.")
+            file_str = str(file_path)
+            self.stdout.write(f"Parsing SQL file from {file_str}...")
+            tables_data = self._extract_from_file(file_str)
 
         for tbl, rows in tables_data.items():
             self.stdout.write(f"  Extracted {len(rows)} records from {tbl}")
@@ -293,9 +296,10 @@ class Command(BaseCommand):
     def _extract_from_database(self, db_url: str) -> dict[str, list[dict[str, Any]]]:
         try:
             import psycopg
+            from psycopg import sql
             from psycopg.rows import dict_row
-        except ImportError:
-            raise CommandError("psycopg is required for live database extraction.")
+        except ImportError as err:
+            raise CommandError("psycopg is required for live database extraction.") from err
 
         tables_to_query = [
             ("auth.users", "id, email, encrypted_password, raw_user_meta_data"),
@@ -316,7 +320,12 @@ class Command(BaseCommand):
             with conn.cursor() as cur:
                 for table, cols in tables_to_query:
                     try:
-                        cur.execute(f"SELECT {cols} FROM {table}")
+                        cur.execute(
+                            sql.SQL("SELECT {} FROM {}").format(
+                                sql.SQL(cols),
+                                sql.SQL(table),
+                            )
+                        )
                         rows = cur.fetchall()
                         tables_data[table] = [dict(r) for r in rows]
                     except Exception as err:
@@ -344,7 +353,7 @@ class Command(BaseCommand):
         seed_permissions()
 
         # 2. Migrate auth.users
-        user_id_map: dict[str, User] = {}
+        user_id_map: dict[str, Any] = {}
         for row in tables_data.get("auth.users", []):
             email = (row.get("email") or "").strip().lower()
             if not email:
@@ -451,12 +460,13 @@ class Command(BaseCommand):
             role = Role.objects.filter(organization=org, name=role_name).first()
 
             if status == "active" and member_user:
+                member_name = str(row.get("name") or getattr(member_user, "name", "") or "")
                 membership, created = Membership.objects.update_or_create(
                     organization=org,
                     email=email,
                     defaults={
                         "user": member_user,
-                        "name": row.get("name") or member_user.name,
+                        "name": member_name,
                         "department": row.get("department") or "",
                         "status": Membership.Status.ACTIVE,
                     },
@@ -624,7 +634,11 @@ class Command(BaseCommand):
             # Try to match product by name if possible
             matched_product = None
             for prod in product_map.values():
-                if prod.organization_id == invoice.organization_id and prod.name == desc:
+                if (
+                    getattr(prod, "organization_id", None)
+                    == getattr(invoice, "organization_id", None)
+                    and prod.name == desc
+                ):
                     matched_product = prod
                     break
 
