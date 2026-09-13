@@ -189,7 +189,7 @@ Additional plan-limit, feature-lock, checkout, and upgrade-flow captures are kep
 | `docs/assets/screenshots/app/` | Curated application interface screenshots showcasing all views and workflows |
 | `docs/assets/screenshots/billing/` | Product screenshots for billing, checkout, plan limits, and entitlement flows |
 | `backend/` | Django 5/6 + DRF API server (cookiecutter-django scaffold with PostgreSQL, Redis, and Celery) |
-| `invoive_generator-next/` | Next.js frontend application (App Router, Tailwind CSS, Radix UI, Lucide icons) |
+| `frontend/` | Next.js frontend application (App Router, Tailwind CSS, Radix UI, Lucide icons) |
 | `cookiecutter-config.yaml` | Reproducible cookiecutter-django scaffold configuration |
 
 ---
@@ -218,10 +218,10 @@ Note: the bundled `sites` data migration is Postgres-specific; on SQLite fake it
 
 ## Frontend Quickstart
 
-The Next.js frontend is located in `invoive_generator-next/`:
+The Next.js frontend is located in `frontend/`:
 
 ```bash
-cd invoive_generator-next
+cd frontend
 npm install
 npm run dev
 ```

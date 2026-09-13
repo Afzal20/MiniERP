@@ -1,21 +1,22 @@
 # Monorepo tooling and artifacts
 .playwright-mcp/
 .git_frontend_bak/
+invoive_generator-next
 
 # Frontend dependencies and build output
-invoive_generator-next/node_modules/
-invoive_generator-next/.next/
-invoive_generator-next/out/
-invoive_generator-next/build/
-invoive_generator-next/.env*.local
-invoive_generator-next/.env
-invoive_generator-next/*.tsbuildinfo
-invoive_generator-next/next-env.d.ts
-invoive_generator-next/playwright-report/
-invoive_generator-next/test-results/
-invoive_generator-next/server.log
-invoive_generator-next/.pytest_cache/
-invoive_generator-next/.playwright-mcp/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env*.local
+frontend/.env
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+frontend/playwright-report/
+frontend/test-results/
+frontend/server.log
+frontend/.pytest_cache/
+frontend/.playwright-mcp/
 
 # OS / editor
 .DS_Store
@@ -51,11 +52,13 @@ node_modules/
 *.webm
 *.mp4
 
-# Curated documentation screenshots are versioned alongside the README.
+# Curated documentation screenshots and frontend image assets are versioned.
 !docs/assets/
 !docs/assets/screenshots/
 !docs/assets/screenshots/**
 !docs/assets/screenshots/**/*.png
+!frontend/**/*.png
+!frontend/**/*.svg
 
 # Docs build
 docs/_build/
